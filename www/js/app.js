@@ -4,6 +4,15 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('todo', ['ionic'])
+.controller('TodoCtrl', function ($scope) {
+  $scope.tasks = [
+    {title : "task1"},
+    {title : "task2"},
+    {title : "task3"},
+    {title : "task4"},
+    {title : "task5"},
+  ];
+})
 
 // .run(function($ionicPlatform) {
 //   $ionicPlatform.ready(function() {
