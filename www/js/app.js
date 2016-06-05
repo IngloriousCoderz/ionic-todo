@@ -4,15 +4,66 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('todo', ['ionic'])
-.controller('TodoCtrl', function ($scope, $ionicModal) {
-  $scope.tasks = [];
+
+.factory('Projects', function(){
+  return {
+    all: function() {
+      console.log('all');
+    },
+    save: function(projects) {
+      console.log('save');
+    },
+    newProject: function(projects) {
+      console.log(newProject);
+    },
+    getLastActiveIndex: function () {
+      console.log('getLastActiveIndex');
+    },
+    setLastActiveIndex: function (index) {
+      console.log('setLastActiveIndex');
+    },
+  }
+})
+
+.controller('TodoCtrl', function ($scope, $ionicModal, $timeout, $ionicSideMenuDelegate, Projects) {
+
+  var createProject = function(projectTitle) {
+    var newProject = Projects.newPropject(projectTitle);
+    $scope.projects.push(newProject);
+    Projects.save($scope.projects);
+    $scope.selectProject(newProject, $scope.projects.length-1);
+  }
+
+  $scope.projects = Projects.all();
+  $scope.activeProject = $scope.projects[Projects.getLastActiveIndex()];
+
+  $scope.newProject = function () {
+    var projectTitle = prompt('Project name');
+    if(projectTitle) {
+      createProject(projectTitle);
+    }
+  }
+
+  $scope.selectProject = function(project, index) {
+    $scope.activeProject = project;
+    Project.setLastActiveIndex(index);
+    $ionicSideMenuDelegate.toggleLeft(false);
+  }
 
   $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
-    $scope.taskModal=modal;
-  }, {
-    scope: $scope,
-    animation: 'sile-in-up'
-  });
+    $scope.taskModal = modal;
+   }, {
+     scope: $scope
+   });
+
+  //$scope.tasks = [];
+
+  // $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
+  //   $scope.taskModal=modal;
+  // }, {
+  //   scope: $scope,
+  //   animation: 'slide-in-up'
+  // });
 
   $scope.createTask = function(task) {
     console.log('createTask');
@@ -29,7 +80,7 @@ angular.module('todo', ['ionic'])
     $scope.taskModal.hide();
   }
 
-});
+})
 
 // .run(function($ionicPlatform) {
 //   $ionicPlatform.ready(function() {
