@@ -7,7 +7,7 @@
 angular.module('todo', ['ionic'])
 
 .factory('Projects', function() {
-  return {
+  var obj = {
     all: function() {
       var projectString = window.localStorage['projects'];
       if (projectString) {
@@ -30,8 +30,20 @@ angular.module('todo', ['ionic'])
     },
     setLastActiveIndex: function(index) {
       window.localStorage['lastActiveProject'] = index;
+    },
+    update: function(projects) {
+      // http://stackoverflow.com/questions/18234442/angularjs-from-a-factory-how-can-i-call-another-function
+      obj.save(projects);
+    },
+    deleteTask: function(project, task) {
+      console.log(window.localStorage['projects'][project]);
+    },
+    deleteProject: function(project) {
+      console.log(window.localStorage['projects'][project]);
     }
   }
+
+  return obj;
 })
 
 .controller('TodoCtrl', function($scope, $ionicModal, $timeout, $ionicSideMenuDelegate, Projects) {
