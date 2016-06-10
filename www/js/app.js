@@ -40,6 +40,10 @@ angular.module('todo', ['ionic'])
     },
     deleteProject: function(project) {
       console.log(window.localStorage['projects'][project]);
+    },
+    resetProjects: function() {
+      window.localStorage.removeItem('projects');
+      window.localStorage.removeItem('lastActiveProject');
     }
   }
 
@@ -111,6 +115,14 @@ angular.module('todo', ['ionic'])
 
   $scope.toggleProjects = function() {
     $ionicSideMenuDelegate.toggleLeft();
+  };
+
+  $scope.resetProjects = function() {
+    $timeout(function(){
+      $scope.projects = [];
+      $scope.activeProject = null;
+      Projects.resetProjects();
+    });
   };
 
 
