@@ -77,10 +77,50 @@ angular.module('todo', ['ionic'])
 
   // Called to create a new project
   $scope.newProject = function() {
-    var projectTitle = prompt('Project name');
-    if (projectTitle) {
-      createProject(projectTitle);
-    }
+    //var projectTitle = prompt('Project name');
+
+
+    // NON AGGIORNA LO SCOPE! PERCHE' ????
+    // var myPopup = $ionicPopup.show({
+    //   template: '<input type="text" ng-model="newProjectName">',
+    //   title: 'Project name',
+    //   subTitle: 'sub title',
+    //   // scope: $scope,
+    //   buttons: [
+    //     {text: 'cancel'},
+    //     {
+    //       text: '<b>save</b>',
+    //       type: 'button-positive',
+    //       onTap: function(e) {
+    //         console.log('onTap', $scope, $scope.newProjectName);
+    //         if(!$scope.newProjectName) {
+    //           e.preventDefault();
+    //         } else {
+    //           return $scope.newProjectName;
+    //         }
+    //       }
+    //     }
+    //   ]
+    // });
+    // myPopup.then(function(res) {
+    //   console.log(res);
+    // });
+
+    $ionicPopup.prompt({
+      title: 'Add project',
+      template: 'Enter project name',
+      inputType: 'text',
+      inputPlaceholder: 'myNewAwesomeProject'
+    }).then(
+      function(projectTitle) {
+        console.log(projectTitle);
+        if (projectTitle && projectTitle != "") {
+          createProject(projectTitle);
+        } 
+      }
+    );
+
+
   };
 
   // Called to select the given project
