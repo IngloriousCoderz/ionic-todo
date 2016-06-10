@@ -50,7 +50,14 @@ angular.module('todo', ['ionic'])
   return obj;
 })
 
-.controller('TodoCtrl', function($scope, $ionicModal, $timeout, $ionicSideMenuDelegate, Projects) {
+.controller('TodoCtrl', function(
+                                    $scope,
+                                    $ionicModal,
+                                    $ionicPopup,
+                                    $timeout,
+                                    $ionicSideMenuDelegate,
+                                    Projects
+                                  ) {
 
   // A utility function for creating a new project
   // with the given projectTitle
@@ -111,7 +118,10 @@ angular.module('todo', ['ionic'])
   $scope.newTask = function() {
     if (!$scope.activeProject) {
       $scope.toggleProjects();
-      alert("!");
+      $ionicPopup.alert({
+        title: "No current Project",
+        template:"Please create a project first"
+      });
       return;
     }
     $scope.taskModal.show();
@@ -126,10 +136,19 @@ angular.module('todo', ['ionic'])
   };
 
   $scope.resetProjects = function() {
-    $timeout(function(){
-      $scope.projects = [];
-      $scope.activeProject = null;
-      Projects.resetProjects();
+    var confirmPopup = $ionicPopup.confirm({
+      title: "confirm reset",
+      template: "Are you sure you want to reset ALL projects?"
+    });
+
+    confirmPopup.then(function(res) {
+        if(res) {
+          $timeout(function(){
+            $scope.projects = [];
+            $scope.activeProject = null;
+            Projects.resetProjects();
+          });
+        }
     });
   };
 
