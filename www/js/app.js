@@ -87,10 +87,13 @@ angular.module('todo', ['ionic'])
   $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
     $scope.taskModal = modal;
   }, {
-    scope: $scope
+    scope: $scope,
+    animation: 'slide-in-up',
+    focusFirstInput: true
   });
 
   $scope.createTask = function(task) {
+    console.log($scope.activeProject);
     if (!$scope.activeProject || !task) {
       return;
     }
@@ -106,6 +109,11 @@ angular.module('todo', ['ionic'])
   };
 
   $scope.newTask = function() {
+    if (!$scope.activeProject) {
+      $scope.toggleProjects();
+      alert("!");
+      return;
+    }
     $scope.taskModal.show();
   };
 
@@ -129,18 +137,23 @@ angular.module('todo', ['ionic'])
   // Try to create the first project, make sure to defer
   // this by using $timeout so everything is initialized
   // properly
-  $timeout(function() {
-    if ($scope.projects.length == 0) {
-      while (true) {
-        var projectTitle = prompt('Your first project title:');
-        if (projectTitle) {
-          createProject(projectTitle);
-          break;
-        }
-      }
-    }
-  }, 1000);
+  // $timeout(function() {
+  //   if ($scope.projects.length == 0) {
+  //     while (true) {
+  //       var projectTitle = prompt('Your first project title:');
+  //       if (projectTitle) {
+  //         createProject(projectTitle);
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }, 1000);
 
+  $timeout(function(){
+    if ($scope.projects.length == 0) {
+      $scope.toggleProjects();
+    }
+  });
 })
 
 // .run(function($ionicPlatform) {
