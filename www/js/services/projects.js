@@ -82,8 +82,7 @@ angular.module('todo').factory('Projects', function() {
   }
 
   function removeAll() {
-    window.localStorage.removeItem('projects')
-    window.localStorage.removeItem('activeProject')
+    window.localStorage.clear()
   }
 
   return {

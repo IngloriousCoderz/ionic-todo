@@ -52,6 +52,7 @@ angular.module('todo').controller('ProjectsCtrl', function($scope, $rootScope, $
         $timeout(function() {
           Projects.removeAll()
           $scope.projects = Projects.getProjects()
+          $rootScope.$broadcast('ACTIVE_PROJECT_CHANGED')
         })
       }
     })
