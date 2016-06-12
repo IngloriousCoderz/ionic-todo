@@ -1,12 +1,13 @@
 // Ionic Starter App
 
+
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 angular.module('todo', ['ionic'])
 
 .factory('Projects', function() {
-  return {
+  var obj = {
     all: function() {
       var projectString = window.localStorage['projects'];
       if (projectString) {
@@ -29,11 +30,34 @@ angular.module('todo', ['ionic'])
     },
     setLastActiveIndex: function(index) {
       window.localStorage['lastActiveProject'] = index;
+    },
+    update: function(projects) {
+      // http://stackoverflow.com/questions/18234442/angularjs-from-a-factory-how-can-i-call-another-function
+      obj.save(projects);
+    },
+    deleteTask: function(project, task) {
+      console.log(window.localStorage['projects'][project]);
+    },
+    deleteProject: function(project) {
+      console.log(window.localStorage['projects'][project]);
+    },
+    resetProjects: function() {
+      window.localStorage.removeItem('projects');
+      window.localStorage.removeItem('lastActiveProject');
     }
   }
+
+  return obj;
 })
 
-.controller('TodoCtrl', function($scope, $ionicModal, $timeout, $ionicSideMenuDelegate, Projects) {
+.controller('TodoCtrl', function(
+                                    $scope,
+                                    $ionicModal,
+                                    $ionicPopup,
+                                    $timeout,
+                                    $ionicSideMenuDelegate,
+                                    Projects
+                                  ) {
 
   // A utility function for creating a new project
   // with the given projectTitle
@@ -53,10 +77,50 @@ angular.module('todo', ['ionic'])
 
   // Called to create a new project
   $scope.newProject = function() {
-    var projectTitle = prompt('Project name');
-    if (projectTitle) {
-      createProject(projectTitle);
-    }
+    //var projectTitle = prompt('Project name');
+
+
+    // NON AGGIORNA LO SCOPE! PERCHE' ????
+    // var myPopup = $ionicPopup.show({
+    //   template: '<input type="text" ng-model="newProjectName">',
+    //   title: 'Project name',
+    //   subTitle: 'sub title',
+    //   // scope: $scope,
+    //   buttons: [
+    //     {text: 'cancel'},
+    //     {
+    //       text: '<b>save</b>',
+    //       type: 'button-positive',
+    //       onTap: function(e) {
+    //         console.log('onTap', $scope, $scope.newProjectName);
+    //         if(!$scope.newProjectName) {
+    //           e.preventDefault();
+    //         } else {
+    //           return $scope.newProjectName;
+    //         }
+    //       }
+    //     }
+    //   ]
+    // });
+    // myPopup.then(function(res) {
+    //   console.log(res);
+    // });
+
+    $ionicPopup.prompt({
+      title: 'Add project',
+      template: 'Enter project name',
+      inputType: 'text',
+      inputPlaceholder: 'myNewAwesomeProject'
+    }).then(
+      function(projectTitle) {
+        console.log(projectTitle);
+        if (projectTitle && projectTitle != "") {
+          createProject(projectTitle);
+        } 
+      }
+    );
+
+
   };
 
   // Called to select the given project
@@ -70,10 +134,13 @@ angular.module('todo', ['ionic'])
   $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
     $scope.taskModal = modal;
   }, {
-    scope: $scope
+    scope: $scope,
+    animation: 'slide-in-up',
+    focusFirstInput: true
   });
 
   $scope.createTask = function(task) {
+    console.log($scope.activeProject);
     if (!$scope.activeProject || !task) {
       return;
     }
@@ -89,6 +156,14 @@ angular.module('todo', ['ionic'])
   };
 
   $scope.newTask = function() {
+    if (!$scope.activeProject) {
+      $scope.toggleProjects();
+      $ionicPopup.alert({
+        title: "No current Project",
+        template:"Please create a project first"
+      });
+      return;
+    }
     $scope.taskModal.show();
   };
 
@@ -100,22 +175,44 @@ angular.module('todo', ['ionic'])
     $ionicSideMenuDelegate.toggleLeft();
   };
 
+  $scope.resetProjects = function() {
+    var confirmPopup = $ionicPopup.confirm({
+      title: "confirm reset",
+      template: "Are you sure you want to reset ALL projects?"
+    });
+
+    confirmPopup.then(function(res) {
+        if(res) {
+          $timeout(function(){
+            $scope.projects = [];
+            $scope.activeProject = null;
+            Projects.resetProjects();
+          });
+        }
+    });
+  };
+
 
   // Try to create the first project, make sure to defer
   // this by using $timeout so everything is initialized
   // properly
-  $timeout(function() {
-    if ($scope.projects.length == 0) {
-      while (true) {
-        var projectTitle = prompt('Your first project title:');
-        if (projectTitle) {
-          createProject(projectTitle);
-          break;
-        }
-      }
-    }
-  }, 1000);
+  // $timeout(function() {
+  //   if ($scope.projects.length == 0) {
+  //     while (true) {
+  //       var projectTitle = prompt('Your first project title:');
+  //       if (projectTitle) {
+  //         createProject(projectTitle);
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }, 1000);
 
+  $timeout(function(){
+    if ($scope.projects.length == 0) {
+      $scope.toggleProjects();
+    }
+  });
 })
 
 // .run(function($ionicPlatform) {
