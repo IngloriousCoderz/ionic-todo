@@ -51,13 +51,13 @@ angular.module('todo', ['ionic'])
 })
 
 .controller('TodoCtrl', function(
-                                    $scope,
-                                    $ionicModal,
-                                    $ionicPopup,
-                                    $timeout,
-                                    $ionicSideMenuDelegate,
-                                    Projects
-                                  ) {
+  $scope,
+  $ionicModal,
+  $ionicPopup,
+  $timeout,
+  $ionicSideMenuDelegate,
+  Projects
+) {
 
   // A utility function for creating a new project
   // with the given projectTitle
@@ -79,46 +79,45 @@ angular.module('todo', ['ionic'])
   $scope.newProject = function() {
     //var projectTitle = prompt('Project name');
 
+    $scope.data = {}
 
-    // NON AGGIORNA LO SCOPE! PERCHE' ????
-    // var myPopup = $ionicPopup.show({
-    //   template: '<input type="text" ng-model="newProjectName">',
-    //   title: 'Project name',
-    //   subTitle: 'sub title',
-    //   // scope: $scope,
-    //   buttons: [
-    //     {text: 'cancel'},
-    //     {
-    //       text: '<b>save</b>',
-    //       type: 'button-positive',
-    //       onTap: function(e) {
-    //         console.log('onTap', $scope, $scope.newProjectName);
-    //         if(!$scope.newProjectName) {
-    //           e.preventDefault();
-    //         } else {
-    //           return $scope.newProjectName;
-    //         }
-    //       }
-    //     }
-    //   ]
-    // });
-    // myPopup.then(function(res) {
-    //   console.log(res);
-    // });
-
-    $ionicPopup.prompt({
-      title: 'Add project',
-      template: 'Enter project name',
-      inputType: 'text',
-      inputPlaceholder: 'myNewAwesomeProject'
-    }).then(
-      function(projectTitle) {
-        console.log(projectTitle);
-        if (projectTitle && projectTitle != "") {
-          createProject(projectTitle);
-        } 
+    $ionicPopup.show({
+      template: '<input type="text" ng-model="data.projectName">',
+      title: 'Project name',
+      subTitle: 'sub title',
+      scope: $scope,
+      buttons: [{
+        text: 'cancel'
+      }, {
+        text: '<b>save</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+          if (!$scope.data.projectName) {
+            e.preventDefault();
+          } else {
+            return $scope.data.projectName;
+          }
+        }
+      }]
+    }).then(function(res) {
+      if (res) {
+        createProject(res)
       }
-    );
+    })
+
+    // $ionicPopup.prompt({
+    //   title: 'Add project',
+    //   template: 'Enter project name',
+    //   inputType: 'text',
+    //   inputPlaceholder: 'myNewAwesomeProject'
+    // }).then(
+    //   function(projectTitle) {
+    //     console.log(projectTitle);
+    //     if (projectTitle && projectTitle != "") {
+    //       createProject(projectTitle);
+    //     }
+    //   }
+    // );
 
 
   };
@@ -160,7 +159,7 @@ angular.module('todo', ['ionic'])
       $scope.toggleProjects();
       $ionicPopup.alert({
         title: "No current Project",
-        template:"Please create a project first"
+        template: "Please create a project first"
       });
       return;
     }
@@ -182,13 +181,13 @@ angular.module('todo', ['ionic'])
     });
 
     confirmPopup.then(function(res) {
-        if(res) {
-          $timeout(function(){
-            $scope.projects = [];
-            $scope.activeProject = null;
-            Projects.resetProjects();
-          });
-        }
+      if (res) {
+        $timeout(function() {
+          $scope.projects = [];
+          $scope.activeProject = null;
+          Projects.resetProjects();
+        });
+      }
     });
   };
 
@@ -208,7 +207,7 @@ angular.module('todo', ['ionic'])
   //   }
   // }, 1000);
 
-  $timeout(function(){
+  $timeout(function() {
     if ($scope.projects.length == 0) {
       $scope.toggleProjects();
     }
