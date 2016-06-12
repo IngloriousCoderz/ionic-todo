@@ -51,9 +51,9 @@
 
       <ion-content>
         <ion-list show-delete="showDelete" show-reorder="showReorder">
-          <ion-item ng-repeat="task in activeProject.tasks" class="item-remove-animate">
+          <ion-item ng-repeat="task in activeProject.tasks track by task.id" class="item-remove-animate">
             {{task.title}}
-            <ion-option-button class="button-info" ng-click="editTask(task)">
+            <ion-option-button class="button-info" ng-click="editTask(task, $index)">
               Edit
             </ion-option-button>
             <ion-delete-button class="ion-minus-circled" ng-click="removeTask($index)">
@@ -75,7 +75,7 @@
       </ion-header-bar>
       <ion-content scroll="false">
         <ion-list>
-          <ion-item ng-repeat="project in projects" ng-click="selectProject(project, $index)" ng-class="{active: activeProject == project}">
+          <ion-item ng-repeat="project in projects" ng-click="selectProject($index)" ng-class="{active: activeProject == project}">
             {{project.title}}
           </ion-item>
         </ion-list>

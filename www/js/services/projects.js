@@ -1,55 +1,102 @@
 angular.module('todo').factory('Projects', function() {
-  var obj = {
-    all: function() {
-      var projectString = window.localStorage['projects']
-      if (projectString) {
-        return angular.fromJson(projectString)
-      }
-      return []
-    },
-
-    save: function(projects) {
-      window.localStorage['projects'] = angular.toJson(projects)
-    },
-
-    newProject: function(projectTitle) {
-      // Add a new project
-      return {
-        title: projectTitle,
-        tasks: []
-      }
-    },
-
-    getActiveProject: function() {
-      return obj.all()[obj.getLastActiveIndex()]
-    },
-
-    getLastActiveIndex: function() {
-      return parseInt(window.localStorage['lastActiveProject']) || 0
-    },
-
-    setLastActiveIndex: function(index) {
-      window.localStorage['lastActiveProject'] = index
-    },
-
-    update: function(projects) {
-      // http://stackoverflow.com/questions/18234442/angularjs-from-a-factory-how-can-i-call-another-function
-      obj.save(projects)
-    },
-
-    deleteTask: function(project, task) {
-      console.log(window.localStorage['projects'][project])
-    },
-
-    deleteProject: function(project) {
-      console.log(window.localStorage['projects'][project])
-    },
-
-    resetProjects: function() {
-      window.localStorage.removeItem('projects')
-      window.localStorage.removeItem('lastActiveProject')
-    }
+  function getMaxId() {
+    return window.localStorage.getItem('maxId') || 0
   }
 
-  return obj
+  function incrementMaxId() {
+    var id = getMaxId()
+    window.localStorage.setItem('maxId', ++id)
+  }
+
+  function getActiveProject() {
+    return getProjects()[getActiveProjectIndex()]
+  }
+
+  function getProjects() {
+    var projects = window.localStorage.getItem('projects')
+    if (projects) {
+      return angular.fromJson(projects)
+    }
+    return []
+  }
+
+  function setProjects(projects) {
+    window.localStorage.setItem('projects', angular.toJson(projects))
+  }
+
+  function getActiveProjectIndex() {
+    return parseInt(window.localStorage.getItem('activeProject')) || 0
+  }
+
+  function setActiveProjectIndex(index) {
+    window.localStorage.setItem('activeProject', index)
+  }
+
+  function createProject(title) {
+    var project = {
+      title: title,
+      tasks: []
+    }
+
+    var projects = getProjects()
+    projects.push(project)
+    setActiveProjectIndex(projects.length - 1)
+    setProjects(projects)
+  }
+
+  function removeProject(index) {
+    var projects = getProjects()
+    projects.splice(index, 1)
+    setProjects(projects)
+  }
+
+  function createTask(task) {
+    var projects = getProjects()
+    var activeProject = projects[getActiveProjectIndex()]
+    incrementMaxId()
+    task.id = getMaxId()
+    activeProject.tasks.push(task)
+    setProjects(projects)
+  }
+
+  function updateTask(title, index) {
+    var projects = getProjects()
+    var activeProject = projects[getActiveProjectIndex()]
+    activeProject.tasks[index].title = title
+    setProjects(projects)
+  }
+
+  function moveTask(task, fromIndex, toIndex) {
+    var projects = getProjects()
+    var activeProject = projects[getActiveProjectIndex()]
+    activeProject.tasks.splice(fromIndex, 1)
+    activeProject.tasks.splice(toIndex, 0, task)
+    setProjects(projects)
+  }
+
+  function removeTask(index) {
+    var projects = getProjects()
+    var activeProject = projects[getActiveProjectIndex()]
+    activeProject.tasks.splice(index, 1)
+    setProjects(projects)
+  }
+
+  function removeAll() {
+    window.localStorage.removeItem('projects')
+    window.localStorage.removeItem('activeProject')
+  }
+
+  return {
+    getActiveProject: getActiveProject,
+    getActiveProjectIndex: getActiveProjectIndex,
+    setActiveProjectIndex: setActiveProjectIndex,
+    getProjects: getProjects,
+    createProject: createProject,
+    removeProject: removeProject,
+    createTask: createTask,
+    updateTask: updateTask,
+    moveTask: moveTask,
+    removeTask: removeTask,
+    removeAll: removeAll
+  }
 })

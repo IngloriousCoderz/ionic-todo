@@ -7,29 +7,40 @@ angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $io
 
   // Create our modal
   $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
-    $scope.taskModal = modal;
+    $scope.taskModal = modal
   }, {
     scope: $scope
-  });
+  })
+
+  $scope.newTask = function() {
+    if (!$scope.activeProject) {
+      $scope.toggleProjects()
+      $ionicPopup.alert({
+        title: "No current Project",
+        template: "Please create a project first"
+      })
+      return
+    }
+    $scope.taskModal.show()
+  }
+
+  $scope.closeNewTask = function() {
+    $scope.taskModal.hide()
+  }
 
   $scope.createTask = function(task) {
     if (!$scope.activeProject || !task) {
       return
     }
-    $scope.activeProject.tasks.push({
-      title: task.title
-    });
+    Projects.createTask(task)
+    $scope.activeProject = Projects.getActiveProject()
     $scope.taskModal.hide()
-
-    // Inefficient, but save all the projects
-    Projects.save($scope.projects)
-
     task.title = ""
   }
 
-  $scope.editTask = function(item) {
+  $scope.editTask = function(task, index) {
     $scope.data = {
-      title: item.title
+      title: task.title
     }
 
     $ionicPopup.show({
@@ -44,46 +55,29 @@ angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $io
         type: 'button-positive',
         onTap: function(e) {
           if (!$scope.data.title) {
-            e.preventDefault();
+            e.preventDefault()
           } else {
-            return $scope.data.title;
+            return $scope.data.title
           }
         }
       }]
     }).then(function(res) {
       if (res) {
-        item.title = res
-        Projects.save($scope.projects)
+        Projects.updateTask(res, index)
+        $scope.activeProject = Projects.getActiveProject()
         $ionicListDelegate.closeOptionButtons()
       }
     })
-  };
+  }
 
   $scope.moveTask = function(task, fromIndex, toIndex) {
-    $scope.activeProject.tasks.splice(fromIndex, 1)
-    $scope.activeProject.tasks.splice(toIndex, 0, task)
-    Projects.save($scope.projects)
+    Projects.moveTask(task, fromIndex, toIndex)
+    $scope.activeProject = Projects.getActiveProject()
   }
 
   $scope.removeTask = function(index) {
-    $scope.activeProject.tasks.splice(index, 1)
-    Projects.save($scope.projects)
-  }
-
-  $scope.newTask = function() {
-    if (!$scope.activeProject) {
-      $scope.toggleProjects()
-      $ionicPopup.alert({
-        title: "No current Project",
-        template: "Please create a project first"
-      })
-      return
-    }
-    $scope.taskModal.show()
-  };
-
-  $scope.closeNewTask = function() {
-    $scope.taskModal.hide()
+    Projects.removeTask(index)
+    $scope.activeProject = Projects.getActiveProject()
   }
 
   $scope.toggleProjects = function() {

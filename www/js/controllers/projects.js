@@ -1,7 +1,5 @@
 angular.module('todo').controller('ProjectsCtrl', function($scope, $rootScope, $timeout, $ionicSideMenuDelegate, $ionicPopup, Projects) {
-  $scope.projects = Projects.all();
-
-  $scope.activeProject = Projects.getActiveProject()
+  $scope.projects = Projects.getProjects();
 
   $timeout(function() {
     if ($scope.projects.length == 0) {
@@ -32,14 +30,15 @@ angular.module('todo').controller('ProjectsCtrl', function($scope, $rootScope, $
       }]
     }).then(function(res) {
       if (res) {
-        createProject(res)
+        Projects.createProject(res)
+        $scope.projects = Projects.getProjects()
+        $scope.selectProject(Projects.getActiveProjectIndex())
       }
     })
   }
 
-  $scope.selectProject = function(project, index) {
-    $scope.activeProject = project
-    Projects.setLastActiveIndex(index)
+  $scope.selectProject = function(index) {
+    Projects.setActiveProjectIndex(index)
     $ionicSideMenuDelegate.toggleLeft(false)
     $rootScope.$broadcast('ACTIVE_PROJECT_CHANGED')
   }
@@ -51,18 +50,10 @@ angular.module('todo').controller('ProjectsCtrl', function($scope, $rootScope, $
     }).then(function(res) {
       if (res) {
         $timeout(function() {
-          $scope.projects = []
-          $scope.activeProject = null
-          Projects.resetProjects()
+          Projects.removeAll()
+          $scope.projects = Projects.getProjects()
         })
       }
     })
-  }
-
-  function createProject(projectTitle) {
-    var newProject = Projects.newProject(projectTitle);
-    $scope.projects.push(newProject);
-    Projects.save($scope.projects);
-    $scope.selectProject(newProject, $scope.projects.length - 1);
   }
 })
