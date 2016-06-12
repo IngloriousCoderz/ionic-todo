@@ -56,8 +56,11 @@ angular.module('todo', ['ionic'])
   $ionicPopup,
   $timeout,
   $ionicSideMenuDelegate,
+  $ionicListDelegate,
   Projects
 ) {
+  $scope.showDelete = false
+  $scope.showReorder = false
 
   // A utility function for creating a new project
   // with the given projectTitle
@@ -139,7 +142,6 @@ angular.module('todo', ['ionic'])
   });
 
   $scope.createTask = function(task) {
-    console.log($scope.activeProject);
     if (!$scope.activeProject || !task) {
       return;
     }
@@ -153,6 +155,47 @@ angular.module('todo', ['ionic'])
 
     task.title = "";
   };
+
+  $scope.editTask = function(item) {
+    $scope.data = {
+      title: item.title
+    }
+
+    $ionicPopup.show({
+      template: '<input type="text" ng-model="data.title">',
+      title: 'Edit Task',
+      subTitle: 'sub title',
+      scope: $scope,
+      buttons: [{
+        text: 'cancel'
+      }, {
+        text: '<b>save</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+          if (!$scope.data.title) {
+            e.preventDefault();
+          } else {
+            return $scope.data.title;
+          }
+        }
+      }]
+    }).then(function(res) {
+      if (res) {
+        item.title = res
+        Projects.save($scope.projects)
+        $ionicListDelegate.closeOptionButtons()
+      }
+    })
+  };
+
+  $scope.moveTask = function(task, fromIndex, toIndex) {
+    $scope.activeProject.tasks.splice(fromIndex, 1);
+    $scope.activeProject.tasks.splice(toIndex, 0, task);
+  };
+
+  $scope.removeTask = function(index) {
+    $scope.activeProject.tasks.splice(index, 1)
+  }
 
   $scope.newTask = function() {
     if (!$scope.activeProject) {

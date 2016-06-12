@@ -28,19 +28,35 @@
   <ion-side-menus>
     <ion-side-menu-content>
       <ion-header-bar class="bar-dark">
-        <button class="button button-icon" ng-click="toggleProjects()">
-          <i class="icon ion-navicon"></i>
-        </button>
+        <div class="buttons">
+          <button class="button button-icon" ng-click="toggleProjects()">
+            <i class="icon ion-navicon"></i>
+          </button>
+          <button class="button button-icon icon ion-ios-minus-outline" ng-click="showDelete = !showDelete; showReorder = false"></button>
+        </div>
+
         <h1 class="title">{{activeProject.title}}</h1>
-        <!-- New Task button-->
-        <button class="button button-icon" ng-click="newTask()">
-          <i class="icon ion-compose"></i>
-        </button>
+
+        <div class="buttons">
+          <button class="button" ng-click="showDelete = false; showReorder = !showReorder">
+            Reorder
+          </button>
+          <button class="button button-icon" ng-click="newTask()">
+            <i class="icon ion-compose"></i>
+          </button>
+        </div>
       </ion-header-bar>
-      <ion-content scroll="false">
-        <ion-list>
-          <ion-item ng-repeat="task in activeProject.tasks">
+      <ion-content>
+        <ion-list show-delete="showDelete" show-reorder="showReorder">
+          <ion-item ng-repeat="task in activeProject.tasks" class="item-remove-animate">
             {{task.title}}
+            <ion-option-button class="button-info" ng-click="editTask(task)">
+              Edit
+            </ion-option-button>
+            <ion-delete-button class="ion-minus-circled" ng-click="removeTask($index)">
+            </ion-delete-button>
+            <ion-reorder-button class="ion-navicon" on-reorder="moveTask(task, $fromIndex, $toIndex)">
+            </ion-reorder-button>
           </ion-item>
         </ion-list>
       </ion-content>
@@ -51,8 +67,8 @@
       <ion-header-bar class="bar-dark">
         <h1 class="title">Projects</h1>
         <button class="button button-icon ion-trash-b" ng-click="resetProjects()">
-        <button class="button button-icon ion-plus" ng-click="newProject()">
-        </button>
+          <button class="button button-icon ion-plus" ng-click="newProject()">
+          </button>
       </ion-header-bar>
       <ion-content scroll="false">
         <ion-list>
