@@ -67,10 +67,11 @@
 
     <ion-side-menu side="left" ng-controller="ProjectsCtrl">
       <ion-header-bar class="bar-dark">
-        <h1 class="title">Projects</h1>
-        <button class="button button-icon ion-trash-b" ng-click="resetProjects()">
-          <button class="button button-icon ion-plus" ng-click="newProject()">
-          </button>
+        <div class="buttons">
+          <button class="button button-icon ion-trash-b" ng-click="resetProjects()"></button>
+          <h1 class="title">Projects</h1>
+          <button class="button button-icon ion-plus" ng-click="newProject()"></button>
+        </div>
       </ion-header-bar>
       <ion-content scroll="false">
         <ion-list>

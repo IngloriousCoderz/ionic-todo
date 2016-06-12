@@ -1,9 +1,16 @@
-angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $ionicListDelegate, $ionicSideMenuDelegate, Projects) {
+angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $ionicListDelegate, $ionicModal, $ionicSideMenuDelegate, Projects) {
   $scope.activeProject = Projects.getActiveProject()
 
   $scope.$on('ACTIVE_PROJECT_CHANGED', function() {
     $scope.activeProject = Projects.getActiveProject()
   })
+
+  // Create our modal
+  $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
+    $scope.taskModal = modal;
+  }, {
+    scope: $scope
+  });
 
   $scope.createTask = function(task) {
     if (!$scope.activeProject || !task) {
