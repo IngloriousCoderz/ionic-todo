@@ -9,7 +9,8 @@ angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $io
   $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
     $scope.taskModal = modal
   }, {
-    scope: $scope
+    scope: $scope,
+    focusFirstInput: true,
   })
 
   $scope.newTask = function() {
