@@ -7,16 +7,34 @@ angular.module('todo').controller('ProjectsCtrl', function($scope, $rootScope, $
     }
   })
 
+  $scope.doSomething = function () {
+    console.log("do something bitch");
+  }
+
+  $scope.closePopup = function() {
+  // https://github.com/driftyco/ionic/issues/1556
+    console.log('close popup');
+    if($scope.data.projectName) {
+      $scope.popup.close($scope.data.projectName);
+    }
+  }
+
   $scope.newProject = function() {
     $scope.data = {}
-
-    $ionicPopup.show({
-      template: '<input type="text" ng-model="data.projectName">',
+    $scope.popup = $ionicPopup.show({
+      template: '<input type="text"  \
+                        ng-model="data.projectName" \
+                        autofocus \
+                        placeholder="myAwesomeProject" \
+                        ng-enter="closePopup()" \
+                        >',
+                        // ng-keyup="alert($event.keyCode)" \
+                        // >',
       title: 'Project name',
-      subTitle: 'sub title',
+      subTitle: 'enter project name',
       scope: $scope,
       buttons: [{
-        text: 'cancel'
+        text: 'cancel',
       }, {
         text: '<b>save</b>',
         type: 'button-positive',
@@ -28,7 +46,10 @@ angular.module('todo').controller('ProjectsCtrl', function($scope, $rootScope, $
           }
         }
       }]
-    }).then(function(res) {
+    })
+
+    $scope.popup.then(function(res) {
+      console.log(res);
       if (res) {
         Projects.createProject(res)
         $scope.projects = Projects.getProjects()
