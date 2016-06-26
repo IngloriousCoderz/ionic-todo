@@ -9,7 +9,8 @@ angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $io
   $ionicModal.fromTemplateUrl('new-task.html', function(modal) {
     $scope.taskModal = modal
   }, {
-    scope: $scope
+    scope: $scope,
+    focusFirstInput: true,
   })
 
   $scope.newTask = function() {
@@ -43,8 +44,19 @@ angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $io
       title: task.title
     }
 
-    $ionicPopup.show({
-      template: '<input type="text" ng-model="data.title">',
+    $scope.closePopup = function() {
+    // https://github.com/driftyco/ionic/issues/1556
+      console.log('close popup');
+      if($scope.data.title) {
+        $scope.popup.close($scope.data.title);
+      }
+    }
+
+    $scope.popup = $ionicPopup.show({
+      template: '<input type="text" \
+                        ng-model="data.title" \
+                        ng-enter="closePopup()" \
+                  >',
       title: 'Edit Task',
       subTitle: 'sub title',
       scope: $scope,
@@ -61,7 +73,9 @@ angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $io
           }
         }
       }]
-    }).then(function(res) {
+    })
+
+    $scope.popup.then(function(res) {
       if (res) {
         Projects.updateTask(res, index)
         $scope.activeProject = Projects.getActiveProject()
