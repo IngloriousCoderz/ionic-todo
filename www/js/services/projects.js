@@ -74,6 +74,13 @@ angular.module('todo').factory('Projects', function() {
     setProjects(projects)
   }
 
+  function toggleTask(index) {
+    var projects = getProjects()
+    var activeProject = projects[getActiveProjectIndex()]
+    activeProject.tasks[index].done = !activeProject.tasks[index].done
+    setProjects(projects)
+  }
+
   function removeTask(index) {
     var projects = getProjects()
     var activeProject = projects[getActiveProjectIndex()]
@@ -95,6 +102,7 @@ angular.module('todo').factory('Projects', function() {
     createTask: createTask,
     updateTask: updateTask,
     moveTask: moveTask,
+    toggleTask: toggleTask,
     removeTask: removeTask,
     removeAll: removeAll
   }

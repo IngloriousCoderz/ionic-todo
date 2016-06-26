@@ -80,6 +80,11 @@ angular.module('todo').controller('TasksCtrl', function($scope, $ionicPopup, $io
     $scope.activeProject = Projects.getActiveProject()
   }
 
+  $scope.toggleTask = function(index) {
+    Projects.toggleTask(index)
+    $scope.activeProject = Projects.getActiveProject()
+  }
+
   $scope.toggleProjects = function() {
     $ionicSideMenuDelegate.toggleLeft()
   }
